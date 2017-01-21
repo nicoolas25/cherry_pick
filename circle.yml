@@ -1,0 +1,14 @@
+machine:
+  timezone:
+    Europe/Paris
+  ruby:
+    version:
+      2.4.0
+
+database:
+  override:
+    - echo "No database setup"
+
+test:
+  override:
+    - bundle exec rake
