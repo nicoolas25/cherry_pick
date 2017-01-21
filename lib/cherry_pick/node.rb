@@ -7,7 +7,7 @@ module CherryPick
       explore!
     end
 
-    def related_models
+    def relations
       @links.keys
     end
 
@@ -15,7 +15,7 @@ module CherryPick
 
     def explore!
       @model.reflect_on_all_associations.each do |reflection|
-        @links[reflection.klass.table_name] = reflection
+        @links[reflection.name.to_s] = reflection
       end
     end
   end
