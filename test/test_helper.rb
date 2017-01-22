@@ -12,7 +12,24 @@ require "minitest/autorun"
 require "pry-byebug"
 
 require "active_record"
-ActiveRecord::Base.establish_connection({
-  adapter: "sqlite3",
-  database: ":memory:",
-})
+
+#
+# Prepare databases
+#
+
+require "fileutils"
+
+%w(target source).each do |db_name|
+  db_path = "./test/fixtures/#{db_name}.sqlite3"
+
+  FileUtils.rm(db_path, force: true)
+
+  ActiveRecord::Base.establish_connection({
+    adapter: "sqlite3",
+    database: db_path,
+  })
+
+  load "support/schema.rb"
+end
+
+require "support/models"

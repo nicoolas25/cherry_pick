@@ -4,6 +4,7 @@ module CherryPick
   extend self
 
   autoload :Node, "cherry_pick/node"
+  autoload :DSL,  "cherry_pick/dsl"
 
   def directory
     @directory ||=

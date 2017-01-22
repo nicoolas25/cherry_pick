@@ -41,8 +41,8 @@ fetch do
   get User.where("age <= ?", 30)
 end
 
-# The restore block will configure how data are imported back in the targt database
-restore do
+# The import block will configure how data are imported back in the targt database
+import do
   # Each hook will run for each object saved
   before_save User do |u|
     u.password = "password"
