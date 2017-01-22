@@ -1,22 +1,9 @@
 module CherryPick
   class Node
-    def initialize(model, directory)
-      @links = {}
-      @model = model
-      @directory = directory
-      explore!
-    end
+    attr_accessor :relations
 
-    def relations
-      @links.keys
-    end
-
-    private
-
-    def explore!
-      @model.reflect_on_all_associations.each do |reflection|
-        @links[reflection.name.to_s] = reflection
-      end
+    def initialize(klass)
+      @relations = klass.reflect_on_all_associations.map(&:name).map(&:to_s)
     end
   end
 end

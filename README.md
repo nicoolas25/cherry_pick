@@ -35,7 +35,7 @@ target_db adapter: "mysql2", host: "216.58.204.110", username: "postgres", passw
 # The fetch block will define what to do while we're connected to the source database
 fetch do
   # Each get will get an in-memory version of a given model and all related models
-  get User, [4242]
+  get User.where(id: 42)
 
   # You could also use a query to get all the object (be careful with the memory)
   get User.where("age <= ?", 30)

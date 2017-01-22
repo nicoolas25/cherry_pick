@@ -32,4 +32,17 @@ require "fileutils"
   load "support/schema.rb"
 end
 
+#
+# Setup database cleaner
+#
+
+require "database_cleaner"
+
+DatabaseCleaner.strategy = :deletion
+
+class Minitest::Spec
+  before { DatabaseCleaner.start }
+  after { DatabaseCleaner.clean }
+end
+
 require "support/models"
