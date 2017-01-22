@@ -3,12 +3,29 @@ require "test_helper"
 describe CherryPick::Importer do
   let(:instance) { CherryPick::Importer.new }
 
-  describe "#run" do
-    before { @result = instance.run(models) }
+  describe "#before_save" do
+    before do
+      instance.before_save(City) do |city|
+        city.name = "imported-#{city.name}"
+      end
+    end
 
+    it "takes a model's class and a block" do
+      # Shouldn't raise, that's all
+    end
+
+    it "apply the changes to the saved target models" do
+      instance.run([City.new(id: 1, name: "Paris")])
+      value(City.first.name).must_equal "imported-Paris"
+    end
+  end
+
+  describe "#run" do
     let(:city) { City.new(id: 1, name: "Paris", created_at: Time.parse("2015-01-01 12:00:00 UTC")) }
     let(:mayor) { Mayor.new(id: 1, beloved_city_id: 1) }
     let(:models) { [ city, mayor ] }
+
+    before { instance.run(models) }
 
     it "writes models to the database" do
       value(City.first).wont_be_nil

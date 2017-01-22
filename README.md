@@ -50,11 +50,6 @@ import do
 end
 ```
 
-## Plans
-
-- Use queries to select things to import: `get User.where("age <= ?", 30)`
-- Anonymous imports: reset passwords, tokens, emails, IPs, ...
-
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/nicoolas25/cherry_pick.

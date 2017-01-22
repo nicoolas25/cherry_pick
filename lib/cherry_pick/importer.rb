@@ -1,5 +1,13 @@
 module CherryPick
   class Importer
+    def initialize
+      @before_save_blocks ||= {}
+    end
+
+    def before_save(klass, &block)
+      @before_save_blocks[klass] = block
+    end
+
     def run(models)
       mapping = models.each.with_object({}) do |source_model, mapping|
         key = [source_model.class.name, source_model.id]
@@ -22,6 +30,11 @@ module CherryPick
       # Copy the {created,updated}_at too!
       model.created_at = source_model.created_at if source_model.attribute_names.include?("created_at")
       model.updated_at = source_model.updated_at if source_model.attribute_names.include?("updated_at")
+
+      # Execute the before_save hooks
+      if block = @before_save_blocks[model.class]
+        block.call(model)
+      end
 
       model.instance_exec do
         # Copied from AR source code doing creation
