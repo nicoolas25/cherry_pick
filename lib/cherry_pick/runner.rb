@@ -2,9 +2,7 @@ module CherryPick
   class Runner
     attr_reader :dsl
 
-    def initialize(config_file_content, base = ActiveRecord::Base)
-      @base = base
-
+    def initialize(config_file_content)
       @dsl = DSL.new
       @dsl.instance_eval(config_file_content)
 

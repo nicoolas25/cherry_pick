@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+require "cherry_pick"
+
+puts "Reading #{ARGV[0]}..."
+config_file_content = File.read(ARGV[0])
+
+puts "Cherry picking..."
+CherryPick::Runner.new(config_file_content).run
+
+

@@ -50,6 +50,12 @@ import do
 end
 ```
 
+## TODO
+
+- Add logging
+- Improve the CLI
+- Support `has_and_belongs_to_many` associations
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/nicoolas25/cherry_pick.
