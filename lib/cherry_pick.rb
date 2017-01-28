@@ -33,6 +33,10 @@ module CherryPick
     end
   end
 
+  def withing_transaction(&block)
+    ActiveRecord::Base.transaction(&block)
+  end
+
   attr_accessor :logger
 
   def log(message, level: :info)
