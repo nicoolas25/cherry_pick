@@ -19,6 +19,10 @@ module CherryPick
       @path_str == "/"
     end
 
+    def <<(association_name)
+      self.class.after(self, association_name)
+    end
+
     private_class_method :new
 
     def self.root

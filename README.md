@@ -87,7 +87,15 @@ end
 
 ## Controlling exploration
 
-During the traversal of the object graph, a _path_ will be attached to each object.
+During the traversal of the object graph, a _path_ will be attached to each object. The path
+starts with `/` when the model is directly fetched from the `get`s. After each traversal, the
+path gets a new element. Following the configuration, here are a few examples:
+
+- `/versions` would match the association named `versions of the root `User`
+- `versions` without the leading `/` would match any associations named `versions`
+- `posts/related_posts` would match any `related_posts` following a `posts` association
+
+By using those paths, it is possible to control the way the traversal of the association-graph.
 
 ## TODO
 

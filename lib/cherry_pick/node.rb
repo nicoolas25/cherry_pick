@@ -22,7 +22,7 @@ module CherryPick
         relations.map do |relation_name|
           child_models = Array(@model.__send__(relation_name))
           child_models.each do |child_model|
-            child_path = Path.after(@path, relation_name)
+            child_path = @path << relation_name
             child_node = Node.new(child_model, child_path, @policy)
             output.yield(child_node)
           end
