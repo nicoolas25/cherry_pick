@@ -3,17 +3,19 @@ require "cherry_pick/version"
 module CherryPick
   extend self
 
-  autoload :Node,     "cherry_pick/node"
-  autoload :DSL,      "cherry_pick/dsl"
-  autoload :Runner,   "cherry_pick/runner"
-  autoload :Fetcher,  "cherry_pick/fetcher"
-  autoload :Importer, "cherry_pick/importer"
-  autoload :Policy,   "cherry_pick/policy"
+  autoload :DirectoryEntry, "cherry_pick/directory_entry"
+  autoload :DSL,            "cherry_pick/dsl"
+  autoload :Runner,         "cherry_pick/runner"
+  autoload :Fetcher,        "cherry_pick/fetcher"
+  autoload :Importer,       "cherry_pick/importer"
+  autoload :Policy,         "cherry_pick/policy"
+  autoload :Node,           "cherry_pick/node"
+  autoload :Path,           "cherry_pick/path"
 
   def directory
     @directory ||=
       ActiveRecord::Base.subclasses.each_with_object({}) do |klass, result|
-        result[klass.name.underscore] = Node.new(klass)
+        result[klass.name.underscore] = DirectoryEntry.new(klass)
       end
   end
 

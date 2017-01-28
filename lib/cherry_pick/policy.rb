@@ -9,6 +9,9 @@ module CherryPick
       @except = options[:except]
     end
 
+    class Rule
+    end
+
     private
 
     def default_options

@@ -8,17 +8,18 @@ module CherryPick
       @before_save_blocks[klass] = block
     end
 
-    def run(models)
+    def run(nodes)
       CherryPick.log "Importing models..."
-      mapping = models.each.with_object({}) do |source_model, mapping|
-        key = [source_model.class.name, source_model.id]
-        mapping[key] = [source_model, write_record(source_model)]
+      mapping = nodes.each.with_object({}) do |node, mapping|
+        node.target_model = write_record(node.model)
+        key = [node.model.class.name, node.model.id]
+        mapping[key] = node
       end
       CherryPick.log "Importing is done"
 
       CherryPick.log "Weaving associations..."
-      mapping.values.each do |source_model, target_model|
-        weave_associations(source_model, target_model, mapping)
+      mapping.values.each do |node|
+        weave_associations(node, mapping)
       end
       CherryPick.log "Weaving is done"
 
@@ -51,17 +52,18 @@ module CherryPick
       model
     end
 
-    def weave_associations(source_model, target_model, mapping)
+    def weave_associations(node, mapping)
+      source_model = node.model
+      target_model = node.target_model
       updates = {}
 
-      node = CherryPick.directory[source_model.class.name.underscore]
       node.relations.each do |name|
         case reflection = source_model.class.reflect_on_association(name)
         when ActiveRecord::Reflection::BelongsToReflection
           attribute = reflection.foreign_key
           related_id = source_model.attributes[attribute]
           key = [ reflection.class_name, related_id ]
-          related_model = mapping.fetch(key).second
+          related_model = mapping.fetch(key).target_model
           updates[attribute] = related_model.id
         end
       end

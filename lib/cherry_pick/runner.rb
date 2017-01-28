@@ -14,10 +14,10 @@ module CherryPick
     def run
       CherryPick.within_connection(@dsl.source_db_config) do
         @fetcher.instance_exec(&@dsl.fetch_block)
-        models = @fetcher.run
+        nodes = @fetcher.run
         CherryPick.within_connection(@dsl.target_db_config) do
           @importer.instance_exec(&@dsl.import_block) if @dsl.import_block
-          results = @importer.run(models)
+          results = @importer.run(nodes)
         end
       end
     end

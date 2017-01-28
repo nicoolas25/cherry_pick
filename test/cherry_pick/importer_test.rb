@@ -15,7 +15,7 @@ describe CherryPick::Importer do
     end
 
     it "apply the changes to the saved target models" do
-      instance.run([City.new(id: 1, name: "Paris")])
+      run_on_models([City.new(id: 1, name: "Paris")])
       value(City.first.name).must_equal "imported-Paris"
     end
   end
@@ -25,7 +25,7 @@ describe CherryPick::Importer do
     let(:mayor) { Mayor.new(id: 1, beloved_city_id: 1) }
     let(:models) { [ city, mayor ] }
 
-    before { instance.run(models) }
+    before { run_on_models }
 
     it "writes models to the database" do
       value(City.first).wont_be_nil
@@ -43,5 +43,13 @@ describe CherryPick::Importer do
     it "preserves has_one associations" do
       value(City.first.mayor).must_equal Mayor.first
     end
+  end
+
+  def run_on_models(models = self.models)
+    policy = CherryPick::Policy.new
+    nodes = models.map do |model|
+      CherryPick::Node.new(model, CherryPick::Path.root, policy)
+    end
+    instance.run(nodes)
   end
 end

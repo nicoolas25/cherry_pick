@@ -30,7 +30,7 @@ describe CherryPick::Fetcher do
       instance.policy(max_depth: max_depth)
     end
 
-    let(:result) { instance.run }
+    let(:result) { instance.run.map(&:model) }
     let(:max_depth) { 2 }
 
     it "includes the root models and their relations" do

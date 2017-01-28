@@ -62,14 +62,14 @@ fetch do
 
   # You can limit the exploration of the graph with the except policy
   policy max_depth: 6, except: [
-    "versions",            # Don't follow any `versions` association
-    "posts.related_posts", # Don't follow `related_posts` from `posts` association
-    "comments.author.*",   # Don't follow any association after and `author` from a `comments` association
+    "versions",            # Don't follow any association named `versions`
+    "posts/related_posts", # Don't follow `related_posts` from any `posts` association
+    "comments/author/*",   # Don't follow any association after and `author` from a `comments` association
   ]
 
   # OR You can direct the graph using the policy with the only policy
   policy max_depth: 6, only: [
-    "posts.comments.author", # Starting from the roots, only get posts, their comments and authors
+    "/posts/comments/author", # Starting from the roots, only get posts, their comments and authors
   ]
 end
 
@@ -84,6 +84,10 @@ import do
   end
 end
 ```
+
+## Controlling exploration
+
+During the traversal of the object graph, a _path_ will be attached to each object.
 
 ## TODO
 
