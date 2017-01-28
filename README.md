@@ -23,25 +23,60 @@ you describe both source and target environments (ie: database configurations) a
 the models you need to pick from the source.
 
 ``` ruby
+#
 # Load what you need to get your AR models!
-require_relative "./config/application"
+#
 
+require "./config/evironment.rb"
+Rails.application.eager_load!
+
+#
+# Use your database.yml
+#
+
+require "erb"
+require "yaml"
+
+renderer = ERB.new(File.read("./config/database.yml"))
+database_configs = YAML::load(renderer.result())
+
+#
 # Declare the database where the data has to be picked
-source_db adapter: "mysql2", host: "localhost",      username: "postgres", password: "password")
+#
 
+source_db database_configs["production"]
+
+#
 # Setup the target where the data has to be imported
-target_db adapter: "mysql2", host: "216.58.204.110", username: "postgres", password: "password")
+#
 
+target_db database_configs["development"]
+
+#
 # The fetch block will define what to do while we're connected to the source database
+#
+
 fetch do
   # Each get will get an in-memory version of a given model and all related models
   get User.where(id: 42)
 
-  # You could also use a query to get all the object (be careful with the memory)
-  get User.where("age <= ?", 30)
+  # You can limit the exploration of the graph with the except policy
+  policy max_depth: 6, except: [
+    "versions",            # Don't follow any `versions` association
+    "posts.related_posts", # Don't follow `related_posts` from `posts` association
+    "comments.author.*",   # Don't follow any association after and `author` from a `comments` association
+  ]
+
+  # OR You can direct the graph using the policy with the only policy
+  policy max_depth: 6, only: [
+    "posts.comments.author", # Starting from the roots, only get posts, their comments and authors
+  ]
 end
 
+#
 # The import block will configure how data are imported back in the targt database
+#
+
 import do
   # Each hook will run for each object saved
   before_save User do |u|
@@ -52,8 +87,8 @@ end
 
 ## TODO
 
-- Add logging
-- Improve the CLI
+- Select precisely the relations to follow
+- Improve the CLI in order to specify a `get` from the command line
 - Support `has_and_belongs_to_many` associations
 
 ## Contributing

@@ -7,5 +7,3 @@ config_file_content = File.read(ARGV[0])
 
 puts "Cherry picking..."
 CherryPick::Runner.new(config_file_content).run
-
-

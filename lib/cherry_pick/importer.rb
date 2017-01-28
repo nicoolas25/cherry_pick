@@ -9,14 +9,18 @@ module CherryPick
     end
 
     def run(models)
+      CherryPick.log "Importing models..."
       mapping = models.each.with_object({}) do |source_model, mapping|
         key = [source_model.class.name, source_model.id]
         mapping[key] = [source_model, write_record(source_model)]
       end
+      CherryPick.log "Importing is done"
 
+      CherryPick.log "Weaving associations..."
       mapping.values.each do |source_model, target_model|
         weave_associations(source_model, target_model, mapping)
       end
+      CherryPick.log "Weaving is done"
 
       mapping
     end

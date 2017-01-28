@@ -8,6 +8,7 @@ module CherryPick
   autoload :Runner,   "cherry_pick/runner"
   autoload :Fetcher,  "cherry_pick/fetcher"
   autoload :Importer, "cherry_pick/importer"
+  autoload :Policy,   "cherry_pick/policy"
 
   def directory
     @directory ||=
@@ -28,5 +29,12 @@ module CherryPick
         ActiveRecord::Base.establish_connection(previous_config)
       end
     end
+  end
+
+  attr_accessor :logger
+
+  def log(message, level: :info)
+    return unless logger
+    logger.__send__(level, message)
   end
 end

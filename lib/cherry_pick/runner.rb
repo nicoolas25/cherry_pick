@@ -8,16 +8,15 @@ module CherryPick
 
       raise ArgumentError, "fetch block must be given" unless @dsl.fetch_block
       @fetcher = Fetcher.new
-      @fetcher.instance_exec(&@dsl.fetch_block)
-
       @importer = Importer.new
-      @importer.instance_exec(&@dsl.import_block) if @dsl.import_block
     end
 
     def run
       CherryPick.within_connection(@dsl.source_db_config) do
+        @fetcher.instance_exec(&@dsl.fetch_block)
         models = @fetcher.run
         CherryPick.within_connection(@dsl.target_db_config) do
+          @importer.instance_exec(&@dsl.import_block) if @dsl.import_block
           results = @importer.run(models)
         end
       end
