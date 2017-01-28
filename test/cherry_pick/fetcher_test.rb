@@ -27,11 +27,12 @@ describe CherryPick::Fetcher do
 
       query = City.where(name: "Paris")
       instance.get(query)
-      instance.policy(max_depth: max_depth)
+      instance.policy(policy_options)
     end
 
     let(:result) { instance.run.map(&:model) }
-    let(:max_depth) { 2 }
+    let(:policy_options) { { max_depth: max_depth } }
+    let(:max_depth) { 10 }
 
     it "includes the root models and their relations" do
       value(result).must_include @paris
@@ -40,28 +41,54 @@ describe CherryPick::Fetcher do
       value(result).must_include *@citizens
     end
 
-    it "doesn't fetch models beyond policy max_depth" do
+    it "includes the relations of the related models too" do
       rouen = City.create(name: "Rouen")
       rouen.subways << @subway
 
-      value(result).wont_include rouen
-    end
-
-    describe "policy's max_depth is 3" do
-      let(:max_depth) { 3 }
-
-      it "includes the relations of the related models too" do
-        rouen = City.create(name: "Rouen")
-        rouen.subways << @subway
-
-        value(result).must_include rouen
-      end
+      value(result).must_include rouen
     end
 
     it "doesn't include unrelated models" do
       milan = City.create(name: "Milan")
 
       value(result).wont_include milan
+    end
+
+    describe "policy's max_depth is 2" do
+      let(:max_depth) { 2 }
+
+      it "doesn't fetch models beyond policy max_depth" do
+        rouen = City.create(name: "Rouen")
+        rouen.subways << @subway
+
+        value(result).wont_include rouen
+      end
+    end
+
+    describe "policy's filtering associations with only" do
+      let(:policy_options) { { only: [ "/mayor" ] } }
+
+      it "includes only what policy is allowing" do
+        value(result).must_include @paris
+        value(result).must_include @mayor
+        value(result).wont_include @subway
+        value(result).wont_include *@citizens
+      end
+    end
+
+    describe "policy's filtering associations with except" do
+      let(:policy_options) { { except: [ "subways/cities" ] } }
+
+      it "includes only what policy is allowing" do
+        rouen = City.create(name: "Rouen")
+        rouen.subways << @subway
+
+        value(result).must_include @paris
+        value(result).must_include @mayor
+        value(result).must_include @subway
+        value(result).must_include *@citizens
+        value(result).wont_include rouen
+      end
     end
   end
 end

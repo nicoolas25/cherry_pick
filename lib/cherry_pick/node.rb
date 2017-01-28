@@ -13,8 +13,7 @@ module CherryPick
 
     def relations
       return [] if @path.depth >= @policy.max_depth
-      entry = CherryPick.directory.fetch(@model.class.name.underscore)
-      entry.relations
+      all_relations.select { |name| @policy.accepts?(@path << name) }
     end
 
     def related_nodes
@@ -36,6 +35,12 @@ module CherryPick
 
     def hash
       @model.hash
+    end
+
+    private
+
+    def all_relations
+      CherryPick.directory.fetch(@model.class.name.underscore).relations
     end
   end
 end

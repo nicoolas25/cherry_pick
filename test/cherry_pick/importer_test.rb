@@ -4,7 +4,7 @@ describe CherryPick::Importer do
   let(:instance) { CherryPick::Importer.new }
 
   describe "#before_save" do
-    before do
+    def setup
       instance.before_save(City) do |city|
         city.name = "imported-#{city.name}"
       end
