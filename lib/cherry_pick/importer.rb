@@ -61,10 +61,11 @@ module CherryPick
         case reflection = source_model.class.reflect_on_association(name)
         when ActiveRecord::Reflection::BelongsToReflection
           attribute = reflection.foreign_key
-          related_id = source_model.attributes[attribute]
-          key = [ reflection.class_name, related_id ]
-          related_model = mapping.fetch(key).target_model
-          updates[attribute] = related_model.id
+          if related_id = source_model.attributes[attribute]
+            key = [ reflection.class_name, related_id ]
+            related_model = mapping.fetch(key).target_model
+            updates[attribute] = related_model.id
+          end
         end
       end
 
